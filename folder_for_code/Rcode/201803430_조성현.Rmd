@@ -1,0 +1,297 @@
+---
+title: "201803430 조성현"
+output: html_document
+chunk_output_type: console
+fontsize: 13pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+### 1.
+어느공장에서 생산하는 부품에 대하여 무게를 측정하여 다음과 같은자료를 얻었다. 평균, 중앙값, 표준편차,왜도,첨도를 구하는 프로그램을 작성하여 값들을 구하시오.
+ 
+    10.21	10.53	9.99	11.11	10.47	10.48	10.25	10.63	11.07	10.61
+    10.33	10.01	11.20	10.41	10.33	10.12	10.78	10.91	10.37	9.58
+
+```{r make data,echo =FALSE}
+#code : input data by vector and change to dataframe
+vec <- c(10.21,10.53,9.99,11.11,10.47,10.48,10.25,10.63,11.07,10.61,10.33,10.01,11.20,10.41,10.33,10.12,10.78,10.91,10.37,9.58)
+```
+
+
+```{r,echo=FALSE,message=FALSE,results = 'hide'}
+# 각 값을 구한후 소수  4번째에서 반올림을 한다. 소수점 끝자리 0 생략.
+#평균
+meanvec <-round(mean(vec), digits = 3)
+#중앙값
+medianvec<-round(median(vec),digits=3)
+#표준편차
+sdvec<-  round(sd(vec),digits = 3)
+#install.packages("moments")
+library(moments)
+#왜도
+skvec<-  round(skewness(vec),digits=3)
+#첨도
+kuvec<-  round(kurtosis(vec), digits=3) 
+```
+
+#### 답:
+
+
+평균: `r meanvec`
+
+중앙값: `r medianvec`
+
+표준편차: `r sdvec`
+
+왜도: `r skvec`
+
+첨도: `r kuvec`
+
+### 2.
+다음은 어느대학에서 개설된 교양 통계학 강좌를 수강한 학생들의 학년별 성적자료이다. 
+성적의 변수명은 score, 학년의 변수명은 level (L=1학년, H=2,3,4학년)로 지정하여 다음 문제를 해결하시오 
+
+    1학년: 88,67,77,75,84,90,95,73,69,80,79,82,95,62
+    2학년: 82,86,88,92,77,72,96,75,68,96,85,86,76,89,83
+
+
+```{r,echo = FALSE,warning=FALSE}
+# 자료를 변수에 맞게 저장
+scoreL <- c(88,67,77,75,84,90,95,73,69,80,79,82,95,62)
+levelL <- c("L")
+df1 <-data.frame(levelL,scoreL)
+library(plyr)
+df1 <- rename(df1,c("levelL" = "level","scoreL"="score"))
+
+#2~4 학년 데이터 
+scoreH <- c(82,86,88,92,77,72,96,75,68,96,85,86,76,89,83)
+levelH <- c("H")
+df2 <- data.frame(levelH,scoreH)
+df2 <- rename(df2,c("levelH" = "level","scoreH"="score"))
+
+# 전체 데이터 셋 
+dfscore <-rbind(df1,df2) 
+```
+
+
+1) 학년별 성적자료에 대한 기술통계량을 산출하시오. 
+
+```{r,message=FALSE,error=FALSE,warning=FALSE}
+#기술통계량 산출을 위한 라이브러리 호출
+library(mosaic)
+# 1학년들의 기술 통계
+favstats(df1$score,df1)
+# 2학년들의 기술통계
+favstats(df2$score,df2)
+```
+
+2) 히스토그램과 상자그림을 작성하시오.
+
+학년 각각의 히스토그램
+
+```{r,echo=FALSE,message=FALSE,error=FALSE,warning=FALSE}
+#install.packages("lattice")
+library(lattice)
+histogram(df1$score,data=df1,main = "score of level 1",xlab = "L grade")
+histogram(df2$score,data=df2,main = "score of level 2~4 ",xlab ="H grade" )
+```
+
+
+학년 각각의 상자그림
+
+```{r,echo=FALSE,message=FALSE,error=FALSE,warning=FALSE}
+#1학년 대상의 상자 그림
+bwplot(df1$score,datta=df1,main = "score of level 1",xlab = "L grade")
+
+#나머지 학년들의 상자그림
+bwplot(df2$score,data = df2,main = "score of level 2~4",xlab = "H grade")
+```
+
+
+
+3) 위의 자료가 정규분포를 따른다고 할수 있는지 설명하시오.  
+
+먼저 1학년의 자료와 2~ 4학년의 자료의 점규성 검정을 한다고 하면,
+
+1학년과 2~4학년의 자료의 수가 각각 100 개를 넘지 못하는 소표본 이다.
+
+자료가 정규 분포를 따른 다는 귀무 가설을 가정하자.
+Shapiro-Wilk normality test 와  Anderson-Darling 정규성 검정법을 사용한다.
+
+
+```{r,echo=FALSE}
+#1 학년 자료 shapiro-wilk 파악
+shapiro.test(df1$score)
+#2~4학년 자료 p-value 파악
+shapiro.test(df2$score)
+```
+
+1학년 자료의 p-value 는 0.916 이며, 2~4 학년의 p-value 는 0.792이다. 
+
+두자료 모두 통계랑(W)과 p 값인(p-value) 유의 확률이 모두 0.05 보다 크다.
+
+```{r,echo=FALSE}
+#install.packages("nortest")
+library(nortest)
+# 자료들의 Anderson-Darling 정규성 검정
+ad.test(df1$score)
+ad.test(df2$score)
+```
+통계랑(A)과 p 값인(p-value) 유의 확률이 모두 0.05 보다 크다.
+
+그렇므로 검정통계량으로 확인한 바에 따라 귀무 가설을 채택한다.
+
+#### 따라서 두개의 자료모두 정규성을 따르며 정규분포를 따른다.
+
+다음은 전 학생(29명)의 성적의 검정이다.
+귀무 가설은 및 검정법은 위와 동일하다.
+
+```{r,echo=FALSE}
+# 전채 학생의 성적의 자료 검정
+shapiro.test(dfscore$score)
+ad.test(dfscore$score)
+```
+통계랑(A,w)와 p 값인(p-value) 유의 확률이 모두 0.05 보다 크다.
+
+그렇므로 검정통계량으로 확인한 바에 따라 귀무 가설을 채택한다.
+
+따라서 전체 학생의 자료도 정규 분포를 따른다.
+
+
+
+추가 자료
+
+다음은 점들이 직선에 유사할때 정규성을 보이는지 확인하는 QQ plot 이다.
+
+1학년
+
+```{r,echo=FALSE}
+# level = l
+qqnorm(df1$score)
+qqline(df1$score)
+```
+
+2~4 학년
+
+```{r,echo=FALSE}
+# level = H
+qqnorm(df2$score)
+qqline(df2$score)
+```
+
+모든학생
+
+```{r,echo=FALSE}
+# all students
+qqnorm(dfscore$score)
+qqline(dfscore$score)
+```
+
+
+4) 학년별 평균, 표준편차, 최대값, 최소값을 구하시오.
+
+```{r,echo=FALSE,results='hide'}
+#1학년
+
+#평균
+medf1<- round(mean(df1$score),digit = 3)
+#표준편차
+sddf1<- round(sd(df1$score),digit = 3)
+#최댓값
+maxdf1<- round(max(df1$score),digit = 3)
+#최솟 값
+mindf1<- round(min(df1$score),digit = 3)
+```
+```{r,echo=FALSE,results='hide'}
+#2~4학년
+#평균
+medf2<- round(mean(df2$score),digit = 3)
+#표준편차
+sddf2<- round(sd(df2$score),digit = 3)
+#최댓값
+maxdf2<- round(max(df2$score),digit = 3)
+#최솟 값
+mindf2<- round(min(df2$score),digit = 3)
+
+```
+
+1학년
+
+평균:`r medf1` 표준편차:`r sddf1` 최댓값:`r maxdf1` 최솟값:`r mindf1`
+
+2~4학년 
+
+평균:`r medf2` 표준편차:`r sddf2` 최댓값:`r maxdf2` 최솟값:`r mindf2`
+
+
+
+
+5) 전체 성적자료에 대한 상자그림을 그리시오. 이때, 이상치가 존재하는지를 살펴볼수있는 상자그림을 작성하고, 이상치가 존재한다고 할수 있는지 설명하시오.
+
+```{r,echo=FALSE,message=FALSE,error=FALSE,warning=FALSE}
+#전학년 대상의 상자 그림
+boxplot(dfscore$score,data=dfscore)
+```
+
+이상치란 다른 데이터보다 아주 작은 값이나 아주 큰 값을 말한다.
+
+box-plot(그림상자)은 사분위수를 보여주는 특징이 있다.
+
+1분위수의 위치는 상자의 가로 하단 변이며 ,3분위수의 위치는 상자 가로 윗변이다.
+
+자료의 범위는 최상단과 최하단의 실선 차이이며 이는 각각 사분위수를 포함한 최댓값과 최솟값이다. 
+
+위 상자의 사분위수를 포함하는 최댓값과 최솟값을 벗어나는 자료가 없으므로
+
+전체 성적 자료는 이상치가 존재 하지 않는다.
+
+### 3. 
+어느 대기업에서는 특정 중소기업으로부터 부품을 납품받고 있다. 이 부품의 납품서에 의하면 부품의 평균 지름은 12.5cm 라고 한다. 이 대기업에서는 부품의 지름이 실제로 납품서에 적혀 있는 값과 동일한 지를 검사하기 위해서 30개의 부품을 임으로 추출하여 지름을 측정한 결과, 다음과 같은 결과를 얻었다.
+
+    12.5  12.6  12.5  12.4  12.6	12.8	12.3  12.6  12.4 	12.5
+    12.8  12.5  12.4	12.6  12.7	12.5	12.4  12.5	12.3 	12.6
+    12.6  12.4  12.7  12.5  12.5	12.6	12.5  12.7  12.4	12.6
+```{r,echo=FALSE}
+#주어진자료를 데이터에 삽입
+diameter <- c( 12.5,12.6,	12.5,	12.4,	12.6,	12.8,	12.3,	12.6,	12.4,	12.5,
+               12.8,	12.5,	12.4,	12.6,12.7,12.5,	12.4,	12.5,	12.3,	12.6,
+               12.6,	12.4,	12.7,12.5,12.5,12.6,	12.5,	12.7,	12.4,	12.6)
+df <- data.frame(diameter)
+```
+
+부품의 평균지름이 납품서와 같다고 할 수 있는지를 유의수준 5%에서 검정하시오. 
+
+30 개의 자료를 가진 표본이므로 정규성을 먼저 검사한다.
+ Shapiro-Wilk normality test를 사용하며 자료가 정규성을 가진다는 귀무 가설을 가정한다..
+```{r,echo=FALSE}
+shapiro.test(df$diameter)
+```
+p-value 가 0.05 를 넘으므로 귀무가설을 기각하지 못한다
+
+위자료가 정규성을 가진다는 사실을 알았으니  유의수준 5%에서 T-검정을 한다.
+먼저 다음과 같은 가설을 세운다.
+
+귀무 가설 : 부품의 납품서에 의한 부품지름과 30개를 임의 추출한 지름의 평균(12.5cm)이 같다
+
+H(0):  μ = 12.5
+
+```{r,echo=FALSE}
+#mu = 귀무가설 하에서의 편균값 μ
+t.test(df$diameter,mu=12.5)
+```
+
+95 percent confidence interval: <- 95% 신뢰 구간 안에 귀무가설의 값 12.5 를 포함한다.
+
+그렇므로 귀무가설을 기각하지 않고, 체택한다.
+
+그렇므로 결론:
+
+#### 부품의 평균지름이 납품서와 같다
+
+
+
