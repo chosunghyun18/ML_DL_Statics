@@ -1,0 +1,38 @@
+---
+title: "0609"
+author: "LeeJunHyoung"
+date: '2021 6 4 '
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# 상관분석 exampl
+
+```{r}
+mid <- c(77, 50, 71, 72, 81, 94, 96, 99, 67)
+final <- c(82, 53, 78, 61, 67, 85, 99, 97, 68)
+score <- data.frame(mid,final)
+head(score)
+```
+
+```{r}
+cor.test(score$mid, score$final, method = "pearson")
+
+```
+
+```{r}
+daily <- c(5,7,9,11,13,15,17,19,21,23)
+period <- c(36,30,25,23,20,15,12,9,5,3)
+smoke <- data.frame(daily, period)
+head(smoke)
+```
+
+```{r}
+mod <- lm(smoke$period ~ smoke$daily)
+mod1 <- lm(period ~ daily, data=score)
+summary(mod)
+# y = 42.83 - 1.788x
+par(mfrow=c(2,2))
+plot(mod)
+```

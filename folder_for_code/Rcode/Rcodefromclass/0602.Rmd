@@ -1,0 +1,61 @@
+---
+title: "통계소프트웨어 및 실습_20210602"
+date: 'Date: 21년6월2일'
+output:
+  html_document:
+    fig_caption: yes
+    # toc_float: true
+    fig_height: 6
+    fig_retina: 2
+    fig_width: 6
+    theme: readable
+    toc: yes
+    toc_depth: 4
+  word_document: default
+  editor_options: 
+    chunk_output_type: console
+  chunk_output_type: console
+---
+
+## 10.1 적합도 검정
+
+```{r}
+# 주사위를 120번 던져 각 눈이 나온 결과는 다음과 같다. 이 주사위가 공정한 주사위라고 할 수 있는지 유의수준 5%하에서 검정하시오.
+num=c(1:6)
+obs=c(18,17,23,21,18,23)
+dice = data.frame(num, obs)
+chisq.test(dice$obs, p=c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6))
+```
+
+## 10.2 독립성 검정
+
+```{r}
+# 새롭게 마련된 세제개혁안에 대한 찬성여부가 소득수준과 관련이 있는지 알아보기 위해 1000명을 표본으로 선정하여 조사한 결과가 아래와 같이 나타났다. 세제개혁에 대한 찬성여부와 소득수준이 서로 독립인지 유의수준 5%에서 검정하여라.
+dat = rbind(c(185, 218, 198), c(156, 143, 100))
+rownames(dat) = c("찬성"," 반대")
+colnames(dat) = c("저소득층","중간층", "고소득층")
+dat
+chisq.test(dat)
+```
+
+
+## 10.3 동일성 검정
+
+```{r}
+# 작업조에 따라 불량률에 차이가 있는지 유의수준 5%에서 검정하시오
+dat = rbind(c(25, 25, 15), c(125, 95, 115))
+rownames(dat) = c("불량품"," 양호품")
+colnames(dat) = c("주간","야간", "심야")
+dat
+chisq.test(dat)
+```
+
+
+## 10.4 요약자료가 아닌 raw data인 경우
+```{r}
+sample=read.csv("C:/SASUniversityEdition/myfolders/sample.csv")
+mytab=table(sample$Drink, sample$Smoke)
+mytab
+chisq.test(mytab)
+```
+

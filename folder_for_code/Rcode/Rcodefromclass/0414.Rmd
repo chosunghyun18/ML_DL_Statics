@@ -1,0 +1,161 @@
+---
+title: "통계소프트웨어 및 실습_20210414"
+date: 'Date: 21년4월14일'
+output:
+  html_document:
+    fig_caption: yes
+    # toc_float: true
+    fig_height: 6
+    fig_retina: 2
+    fig_width: 6
+    theme: readable
+    toc: yes
+    toc_depth: 4
+  word_document: default
+  editor_options: 
+    chunk_output_type: console
+  chunk_output_type: console
+---
+
+## 5.2 Mathematical functions
+
+```{r, eval=FALSE}
+### 5.2.1 Basic functions
+x=c(1,2,3,4)
+min(x)
+max(x)
+5 %% 3
+abs(-3)
+
+### 5.2.2 Special functions
+factorial(4)
+choose(4,2)
+install.packages("gplots")
+library(gtools)
+combinations(4, 2)[,1]
+nchooser = length(combinations(4, 2)[,1])
+npermr = length(permutations(4, 2)[,1])
+
+### 5.2.3 Integer functions
+ceiling(3.3)
+floor(3.3)
+round(3.352, 2)
+round(3.5)
+trunc(3.9)
+```
+
+## 5.3 Matrix operations
+```{r, eval=FALSE}
+## 5.3.1 Create matrix from vector
+A=matrix(c(1, 2, 3, 4), nrow=2, ncol=2, byrow=TRUE)
+A
+## 5.3.2 Combine vectors or matrices
+x1=c(1,2)
+x2=c(4,5)
+x3=c(7,8)
+cbind(x1,x2,x3)
+rbind(x1,x2,x3)
+
+A=matrix(c(1, 2, 3, 4), nrow=2, ncol=2, byrow=TRUE)
+A
+## 5.3.3 Matrix addition
+A+A
+
+
+A
+## 5.3.4 Transpose matrix
+t(A)
+
+## 5.3.5 Matrix multiplication
+A %*% A
+
+## 5.3.6 Invert matrix
+solve(A)
+
+## 5.3.7 Component-wise multiplication
+A*A
+
+## 5.3.8 Create submatrix
+A = matrix(1:12, nrow=3, ncol=4, byrow=TRUE)
+Asub = A[2:3, 3:4]
+Asub
+
+## 5.3.9 Create a diagonal matrix / vector of diagonal elements
+A = matrix(c(1, 2, 3, 4), nrow=2, ncol=2, byrow=TRUE)
+diag(A)
+diag(c(1, 4)) # argument is a vector
+diag(diag(A)) # A is a matrix
+
+```
+
+## 5.4 Examples
+
+```{r, eval=FALSE}
+x = seq(from=-4, to=4.2, length=100)
+normval = dnorm(x, 0, 1)
+dfval = 1
+tval = dt(x, df=dfval)
+
+plot(x, normval, type="n", ylab="f(x)", las=1)
+lines(x, normval, lty=1, lwd=2)
+lines(x, tval, lty=2, lwd=2)
+legend(1.1, .395, lty=1:2, lwd=2,
+legend=c(expression(N(mu == 0,sigma == 1)),
+paste("t with ", dfval," df", sep="")))
+
+install.packages("mosaic")
+library(mosaic)
+xpnorm(1.96, mean=0, sd=1)
+```
+
+## Sec 6. Programming and operating system interface
+
+### 6.1 Control flow, programming, and data generation
+```{r, eval=FALSE}
+## 6.1.1 Looping
+for(i in 1:5) {
+  print("Hi")
+}
+
+## 6.1.2 Conditional execution
+x = 5
+if(x > 0){print("positive")}
+
+x = -2
+if(x>0){print("positive")} else{"negative"}
+
+a=c(1,1,2,2,3,3)
+ifelse(a == 1, "one","else")
+
+## 6.1.3 Sequence of values or patterns
+seq(from=1, to=5, by=2)
+seq(1, 5, 1)
+1:5
+rep(3, 5)
+
+## 6.1.5 Grid of values
+expand.grid(x1=1:3, x2=c("M", "F"))
+
+```
+
+## 6.2 Functions and macros -
+```{r, eval=FALSE}
+## 6.2.2 R functions
+my_function = function(x, y){
+  res1 = x+y
+  res2 = x-y
+  res3 = x*y
+  res4 = x/y
+  
+  res=c(sum = res1, subtraction = res2, multiplication = res3, division = res4)
+  
+  return(res)
+}
+
+my_function(1,2)
+my_function(3,4)
+
+```
+
+
+
