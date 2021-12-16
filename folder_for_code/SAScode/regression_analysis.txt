@@ -1,0 +1,144 @@
+
+
+FILENAME REFFILE '/home/u58222116/SAS Programming/test/yx1x2.xlsx';
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=XLSX
+	OUT=WORK.IMPORT;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.IMPORT; RUN;
+
+
+
+
+proc print data=Work.import;
+run;
+proc reg data = Work.import;
+model y = x1 x2/influence;
+run;
+
+proc reg data = Work.import;
+model y = x1 x2/lackfit;
+run;
+
+data regQdata;
+set Work.import;
+x1Q = x1**2;
+run;
+
+proc reg data = regQdata;
+model y = x1 x1Q;
+run;
+
+
+data multipledata;
+set Work.import;
+x1mx2 = x1*x2;
+run;
+proc reg data = multipledata;
+model y = x1 x2 x1mx2;
+run;
+
+* 모든 데이터 테이블;
+data allkind;
+set multipledata;
+x1Q = x1**2;
+x2Q = x2**2;
+run;
+
+proc reg data = allkind;
+model y = x1 x1Q x2 x2Q x1mx2;
+run;
+
+
+* 대입 법;
+
+proc reg data = allkind;         *forward.  sle;
+model y = x1 x1Q x2 x2Q x1mx2/selection = backward sls=0.1;
+run;
+
+proc reg data = allkind;         *forward.  sle;
+model y = x1 x1Q x2 x2Q x1mx2/selection = stepwise sls=0.1 sle =0.5;
+
+run;
+
+/*============================================================================================================================*/
+
+FILENAME REFFILE '/home/u58222116/SAS Programming/test/ALPITCH.xlsx';
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=XLSX
+	OUT=WORK.alp;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.alp; RUN;
+
+
+*PROC CONTENTS DATA=ALP; RUN;
+proc print data = work.alp;
+run;
+
+data alps;
+set work.alp;
+success = W/(W+L);
+run;
+
+proc reg data = alps;
+model success = ERA IP H HR BB SO/influence vif;
+run;
+
+
+proc reg data = alps;
+model success = ERA BB/influence;
+run;
+
+proc print data = alps;
+run;
+
+
+proc reg data=alps;
+   model success = ERA BB/influence; /* can also use INFLUENCE option */
+   output out=RegOut predicted=Pred student=RStudent cookd=CookD H=Leverage;
+run;
+proc print data = RegOut;
+run;
+
+
+
+
+
+
+
+
+
+
+
+/*
+data a;
+set a;
+Q = mod(_n_,4);
+TIME = _n_;
+if Q = 0 then Q =4 ; 
+run;
+
+data a;
+set a;
+Q1 = (Q =1);
+Q2 = (Q =2);
+Q3 = (Q =3);
+run;
+proc reg data = A plots=none;
+model sales = time Q1 Q2 A3;
+B: test Q1=Q2=Q3=0;
+run;
+*/
+
+
+
+
+
+
+
