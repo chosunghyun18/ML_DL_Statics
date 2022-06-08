@@ -1,0 +1,100 @@
+---
+title: "시계열분석 실습"
+author: "CHO"
+date: '2022-06-07'
+output: 
+  prettydoc::html_pretty:
+    theme : hpstr
+    toc : true
+---
+
+### 1. 데이터 불러오기(역대 영국 왕들의 사망나이)
+```{r}
+king <- scan("http://robjhyndman.com/tsdldata/misc/kings.dat", skip = 3)
+king
+```
+
+### 2. 시계열 데이터로 변환
+```{r}
+ts.king <- ts(king)
+ts.king
+```
+
+### 3. 시계열 그리기
+```{r}
+plot.ts(ts.king)
+```
+
+
+##### 3-1. 단위근 검정 # RESULT PVALUE 0.05 보다 작으면  정상 ,크면 비정상 -> 차분 
+```{r}
+library(tseries)
+
+adf.test(ts.king)
+```
+
+
+### 4. 데이터 차분(1차, 2차, 3차차)
+```{r}
+dif1_king <- diff(ts.king,differences=1)
+dif2_king <- diff(ts.king,differences=2)
+dif3_king <- diff(ts.king,differences=3)
+
+plot.ts(dif1_king, main="1차")
+plot.ts(dif2_king, main="2차")
+plot.ts(dif3_king, main="3차")
+```
+
+
+
+### 5. ACF, PACF 확인
+##### 5-1. 1차 # acf 1차 절단 MA 모형 포함 가능성 , PACF :3차 절단 AR3 모형 포함 가능성
+```{r}
+acf(dif1_king, lag.max = 15, main="ACF")
+pacf(dif1_king, lag.max = 15, main="PACF")
+```
+
+##### 5-2. 2차
+```{r}
+acf(dif2_king, lag.max = 15, main="ACF")
+pacf(dif2_king, lag.max = 15, main="PACF")
+```
+
+#### 5-3. 3차
+```{r}
+acf(dif3_king, lag.max = 15, main="ACF")
+pacf(dif3_king, lag.max = 15, main="PACF")
+```
+
+
+### 6. 단위근 검정 # 디키 플로 테스트 PVALUE 0.05 보다 작으면 정상성 으로 가정
+```{r}
+adf.test(dif1_king)
+```
+
+
+### 7. 모형식별 및 모수추정 # 오토 아리마 , 데이터가 작을때 정확성 작음 , 모형식별
+```{r}
+library(forecast)
+
+# auto.arima를 사용하여 모형 식별
+auto.arima(ts.king)
+
+king.arima1 <- arima(ts.king, order = c(3,1,1))    # AIC 를 작은지 확인 1차 차분, AR3 MA 1
+king.arima1
+
+king.arima2 <- arima(ts.king, order = c(0,1,1))
+king.arima2
+
+king.arima3 <- arima(ts.king, order = c(3,1,0))
+king.arima3
+```
+### 8. 예측
+```{r}
+king.forecast <- forecast(king.arima1,h=5)  # 5개 예측 
+king.forecast
+```
+```{r}
+plot(king.forecast)
+```
+
