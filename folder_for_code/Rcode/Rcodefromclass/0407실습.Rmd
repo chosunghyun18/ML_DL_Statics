@@ -1,0 +1,67 @@
+---
+title: "Untitled"
+author: "LeeJunHyoung"
+date: '2021 4 6 '
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# 4-3. Merging, combining, and subsetting datasets
+
+```{r}
+load(file = "C:/석사자료/석사수업자료/2021-1학기/통계소프트웨어실습조교/324수업조교/3.24ex/3.24ex/help.Rdata")
+ds <- helpdata
+```
+
+```{r}
+smallds1 <- subset(ds,e2b1==1)
+smallds11 <- ds[ds$f1a==1,] # 데이터$원하는열 을 골라줘야 나옴
+smallds2 <- subset(ds,select = c("e2b1","e2b2"))
+smallds22 <- ds[,c("e2b1","e2b2")]
+```
+
+```{r}
+library(mosaic)
+newds1 <- resample(ds, size=20, replace = F) # 비복원추출
+newds2 <- resample(ds, size=20, replace = T) # 복원추출
+```
+
+```{r}
+y <- c("qwe","asd","zxc","as","asd")
+x <- 1:length(y) # 벡터의 갯수까지 나열 (길이)
+x
+ds0 <- data.frame(x,y)
+nrow(ds0)
+```
+
+```{r}
+uniquevalues1 <- unique(y)
+
+duplicated(y)
+```
+
+```{r}
+newds0 <- rbind(x,y) # 행 결합
+sortds <- ds[order(ds$e2b1,ds$e2b2),] # e2b1을 1부터 순서대로 보여주면서 e2b2도 순서대로 보여줌
+
+smallds222 <- merge(smallds2,smallds22, by="e2b1")
+# e2b1을 기준으로 결합하면서 그 때 smallds2와 smallds22의 e2b2가 어떤지 같이 보여줌
+```
+
+# 5. Statistical and mathematical functions
+
+```{r}
+y1 <- pnorm(1.96,0,1) # P(-oo < Z < 1.96) = ?
+y1
+y2 <- qnorm(0.975,0,1) # P(-oo < Z < ?) = 0.975
+y2
+y3 <- rnorm(1000,0,1) # 표준정규분포에서의 난수 1000개 생성
+set.seed(1234) # 시드값 설정
+y4 <- rnorm(1000,0,1) # 1234시드일땐 항상 이 값이 나옴
+y5 <- rnorm(1000)
+
+z1 <- runif(100)
+z2 <- rexp(100,5)
+```
+
